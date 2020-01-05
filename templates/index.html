@@ -10,37 +10,84 @@
 
 <body>
     <h1>Flask Test</h1>
-    <br/>
-    {% if tasks|length < 1 %}
-    <h4>Hooray.There is no task todo.</h4>
-    
-    {% else %}
-    
-    <table>
-        <tr>
-            <th>task</th>
-            <th>added</th>
-            <th>action</th>
-        </tr>
-        {% for task in tasks %}
-        <tr>
-            <td>{{ task.content }}</td>
-            <td>{{ task.date_created.date() }}</td>
-            <td>
-                <a href="/delete/{{ task.id }}">Delete</a>
-                <br/>
+    <br/> {% if tasks|length
+    < 1 %} <h4>Hooray.There is no task todo.</h4>
 
-                <a href="/update/{{ task.id }}">Update</a>
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
-    {% endif %}
-    <form action="/" method="POST">
-        <input type="text" name="content" id="content" />
-        <input type="submit" value="Add Task" />
+        {% else %}
 
-    </form>
+        <table>
+            <tr>
+                <th>task</th>
+                <th>added</th>
+                <th>action</th>
+            </tr>
+            {% for task in tasks %}
+            <tr>
+                <td id="content{{ loop.index }}">{{ task.content }}</td>
+                <td>{{ task.date_created.date() }}</td>
+                <td>
+                    <a href="/delete/{{ task.id }}">Delete</a>
+                    <br/>
+
+                    <a href="#" data-help='update' data-content="content{{ loop.index }}" data-id='{{ task.id }}'>Update</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+        <form id="Formk" method="POST">
+            <input type="text" name="content" id="content" />
+            <input type="submit" id='add' onclick="retfunc('/')" value="Add Task" /><input type="submit" onclick="retfunc('update/')" id="update" value="Update" />
+        </form>
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+        <script>
+            const con = document.getElementById('content')
+            var id = 0
+            document.querySelectorAll('a').forEach((a) => {
+                if (a.dataset.help == 'update') {
+                    a.addEventListener('click', (e) => {
+                        con.value = document.getElementById(a.dataset.content).innerHTML;
+                        id = a.dataset.id;
+                    })
+                }
+            })
+            document.getElementById('Formk').addEventListener('submit', (e) => {
+                e.preventDefault()
+            })
+
+            function retfunc(target) {
+                console.log(id, 'thattt')
+                var form_data = new FormData($('form')[0]);
+                if (id == 0) {
+                    document.getElementById('Formk').action = target;
+                } else {
+                    let t = 'update/' + id.toString()
+                    console.log(t, 'thisssss')
+                    target = t
+                    document.getElementById('Formk').action = t
+
+                }
+
+                $.ajax({
+                    url: target,
+                    type: 'POST',
+                    enctype: 'multipart/form-data',
+                    data: form_data,
+                    processData: false,
+                    contentType: false,
+                    cache: false,
+                    success: function(response) {
+                        console.log(response, '------------', 'success')
+                        document.location.reload();
+                    },
+                    error: function(jqXHR, status, error) {
+                        console.log(jqXHR);
+                        console.log(status);
+                        console.log(error);
+                    }
+                });
+            }
+        </script>
 </body>
 
 </html>

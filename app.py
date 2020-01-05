@@ -1,4 +1,4 @@
-from flask import Flask, render_template , request, redirect 
+from flask import Flask, render_template , request, redirect , jsonify
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import os
@@ -58,6 +58,7 @@ def update(id):
         try:
             db.session.commit()
             return redirect('/')
+
         except:
             return 'An error occured'
 
