@@ -34,7 +34,8 @@ def index():
             return 'Error'
 
     tasks = Todo.query.order_by(Todo.date_created).all()
-    return render_template('index.html',tasks=tasks)
+    req = request.environ['X-Forwarded-For']
+    return render_template('index.html',tasks=tasks, req=req)
 
 @app.route('/delete/<int:id>')
 def delete(id):
