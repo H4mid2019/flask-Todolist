@@ -19,7 +19,7 @@ class Todo(db.Model):
     def __repr__(self):
         return '<Task %r>' % self.id
 
-
+ 
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
@@ -34,8 +34,11 @@ def index():
             return 'Error'
 
     tasks = Todo.query.order_by(Todo.date_created).all()
-    req = request.environ['HTTP_X_FORWARDED_FOR']
-    return render_template('index.html',tasks=tasks, req=req)
+    ip = request.headers['X-Forwarded-For']
+    with urllib.request.urlopen("https://geolocation-db.com/jsonp/"+ip) as url:
+        ipinfo = json.loads(url.read().decode().split("(")[1].strip(")"))
+    # req = request.environ['HTTP_X_FORWARDED_FOR']
+    return render_template('index.html',tasks=tasks, req=ipinfo)
 
 @app.route('/delete/<int:id>')
 def delete(id):
