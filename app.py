@@ -41,7 +41,7 @@ def index():
     with urllib.request.urlopen("https://geolocation-db.com/jsonp/"+ip) as url:
         ipinfo = json.loads(url.read().decode().split("(")[1].strip(")"))
     # req = request.environ['HTTP_X_FORWARDED_FOR']
-    return render_template('index.html',tasks=tasks, req=ipinfo)
+    return render_template('index.html',tasks=tasks, req=ipinfo['country_name'])
 
 @app.route('/delete/<int:id>')
 def delete(id):
