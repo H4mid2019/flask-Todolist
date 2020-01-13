@@ -2,8 +2,6 @@ from flask import Flask, render_template , request, redirect , jsonify
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import os
-import urllib.request
-import json
 
 
 
@@ -37,11 +35,7 @@ def index():
             return 'Error'
 
     tasks = Todo.query.order_by(Todo.date_created).all()
-    ip = request.headers['X-Forwarded-For']
-    with urllib.request.urlopen("https://geolocation-db.com/jsonp/"+ip) as url:
-        ipinfo = json.loads(url.read().decode().split("(")[1].strip(")"))
-    # req = request.environ['HTTP_X_FORWARDED_FOR']
-    return render_template('index.html',tasks=tasks, req=ipinfo['country_name'])
+    return render_template('index.html',tasks=tasks)
 
 @app.route('/delete/<int:id>')
 def delete(id):
