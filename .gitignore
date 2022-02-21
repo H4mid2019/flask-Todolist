@@ -1,3 +1,4 @@
 .env
 Pipfile*
 **/__pycache__/
+*.db
