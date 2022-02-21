@@ -10,8 +10,8 @@
 
 <body>
     <h1>Flask Test</h1>
-    <br/> {% if tasks|length
-    < 1 %} <h4>Hooray.There is no task todo.</h4>
+    <br/> {% if tasks|length < 1 %} 
+    <h4>Hooray.There is no task todo.</h4>
 
         {% else %}
 
@@ -26,67 +26,49 @@
                 <td id="content{{ loop.index }}">{{ task.content }}</td>
                 <td>{{ task.date_created.date() }}</td>
                 <td>
-                    <a href="/delete/{{ task.id }}">Delete</a>
+                    <a href="/delete/{{ task.id }}" id='deleteButt'>Delete</a>
                     <br/>
 
-                    <a href="#" data-help='update' data-content="content{{ loop.index }}" data-id='{{ task.id }}'>Update</a>
+                    <a href="/update/{{ task.id }}" id="updateButt" data-help='update' data-content="content{{ loop.index }}" data-id='{{ task.id }}'>Update</a>
                 </td>
             </tr>
             {% endfor %}
         </table>
         {% endif %}
-        <form id="Formk" method="POST">
+        <form id="form" method="POST" action="" data-method="POST">
             <input type="text" name="content" id="content" />
-            <input type="submit" id='add' onclick="retfunc('/')" value="Add Task" /><input type="submit" onclick="retfunc('update/')" id="update" value="Update" />
+            <input type="submit" id='add' value="submit" />
         </form>
-        <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
         <script>
+            const deleteButt = document.getElementById("deleteButt")
+            const form = document.getElementById('form')
+            if(deleteButt){
+                deleteButt.addEventListener('click', (e)=> {
+                    e.preventDefault()
+                    fetch(e.target.href, {
+                        method: 'DELETE',
+                    }).then(res => res.status == 204 ? location.reload() : "").catch(err=> console.log(err))
+                })
+                document.querySelector('#updateButt').addEventListener('click', (event)=> {
+                    event.preventDefault()
+                    document.getElementById('content').value = document.querySelector(`#${event.target.dataset.content}`).innerText
+                    form.dataset.method = 'PUT'
+                    form.action = event.target.href
+  
+                })
+
+            }
+            form.addEventListener('submit', (e) => {
+                e.preventDefault()
+                fetch(form.action, {
+                    method: form.dataset.method,
+                    body: new FormData(form)
+                }).then(res => 200 <= res.status <=299 ? location.reload() : "").catch(err => console.log(err))
+            })
+
             const con = document.getElementById('content')
             var id = 0
-            document.querySelectorAll('a').forEach((a) => {
-                if (a.dataset.help == 'update') {
-                    a.addEventListener('click', (e) => {
-                        con.value = document.getElementById(a.dataset.content).innerHTML;
-                        id = a.dataset.id;
-                    })
-                }
-            })
-            document.getElementById('Formk').addEventListener('submit', (e) => {
-                e.preventDefault()
-            })
 
-            function retfunc(target) {
-                console.log(id, 'thattt')
-                var form_data = new FormData($('form')[0]);
-                if (id == 0) {
-                    document.getElementById('Formk').action = target;
-                } else {
-                    let t = 'update/' + id.toString()
-                    console.log(t, 'thisssss')
-                    target = t
-                    document.getElementById('Formk').action = t
-
-                }
-
-                $.ajax({
-                    url: target,
-                    type: 'POST',
-                    enctype: 'multipart/form-data',
-                    data: form_data,
-                    processData: false,
-                    contentType: false,
-                    cache: false,
-                    success: function(response) {
-                        console.log(response, '------------', 'success')
-                        document.location.reload();
-                    },
-                    error: function(jqXHR, status, error) {
-                        console.log(jqXHR);
-                        console.log(status);
-                        console.log(error);
-                    }
-                });
-            }
         </script>
         <p>{{req}}</p>
 </body>
