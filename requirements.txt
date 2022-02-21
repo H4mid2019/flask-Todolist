@@ -8,3 +8,4 @@ MarkupSafe
 SQLAlchemy
 Werkzeug
 Flask-Migrate
+Flask-Session

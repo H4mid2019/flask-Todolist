@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, render_template , request, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_session import Session 
 from datetime import datetime
 import os
 import uuid
@@ -18,6 +19,9 @@ app.logger.addHandler(file_handler)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///{}'.format(db_path)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = uuid.uuid4().hex
+app.config["SESSION_PERMANENT"] = True
+app.config["SESSION_TYPE"] = "filesystem"
+Session(app)
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
