@@ -6,11 +6,15 @@ import os
 import uuid
 import string
 import random
-
+from logging import FileHandler, WARNING
 
 
 app = Flask(__name__)
 db_path = os.path.join(os.path.dirname(__file__), 'sqlite3.db')
+
+file_handler = FileHandler("logs.txt")
+file_handler.setLevel(WARNING)
+app.logger.addHandler(file_handler)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///{}'.format(db_path)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = uuid.uuid4().hex
